@@ -1,20 +1,39 @@
-clc
-clear all
-close all
-a=imread('horse.jpg');
-%Addition of salt and pepper noise
-b=imnoise(a,'salt & pepper',0.1);
-%Defining the box and median filters
-h1=1/9*ones(3,3);
-h2=1/25*ones(5,5);
-c1=conv2(b,h1,'same');
-c2=conv2(b,h2,'same');
-c3=medfilt2(b,[3 3]);
-c4=medfilt2(b,[5 5]);
-subplot(3,2,1),imshow(a),title('Original image')
-subplot(3,2,2),imshow(b),title('Salt & pepper noise')
-subplot(3,2,3),imshow(uint8(c1)),title('3 x 3 smoothing')
-subplot(3,2,4),imshow(uint8(c2)),title('5 x 5 smoothing')
-subplot(3,2,5),imshow(uint8(c3)),title('3x 3 Median filter')
-subplot(3,2,6),imshow(uint8(c4)),title('5 x 5 Median filter')
-
+a=imread('cameraman.tif');
+a=imnoise(a,'salt & pepper',.2);
+a=double(a);
+[m n]=size(a);
+N=input('enter the window size='); 
+Out_Imag=a;
+if(mod(N,2)==1)
+Start=(N+1)/2;
+End=Start;
+else
+Start=N/2;
+End=Start+1;
+end
+if(mod(N,2)==1)
+limit1=(N-1)/2;
+limit2=limit1;
+else
+limit1=(N/2)-1;
+limit2=limit1+1;
+end
+for i=Start:(m-End+1),
+for j=Start:(n-End+1),
+I=1; 
+for k=-limit1:limit2,
+for l=-limit1:limit2,
+mat(I)=a(i+k,j+l);
+I=I+1;
+end
+end
+mat=sort(mat);    %To sort the elements in the window
+if(mod(N,2)==1)
+Out_Imag(i,j)=(mat(((N^2)+1)/2));
+else
+Out_Imag(i,j)=(mat((N^2)/2)+mat(((N^2)/2)+1))/2;
+end
+end
+end
+imshow(uint8(a)),title('original Image'),figure,
+imshow(uint8(Out_Imag)),title('median filtered Image');   
